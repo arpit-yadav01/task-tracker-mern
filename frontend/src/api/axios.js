@@ -1,13 +1,10 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
-
-if (!baseURL) {
-  console.error("❌ VITE_API_BASE_URL is missing at runtime");
-}
-
+// HARD GUARANTEED BASE URL
 const api = axios.create({
-  baseURL
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://task-tracker-mern-9fla.onrender.com/api"
 });
 
 export default api;
