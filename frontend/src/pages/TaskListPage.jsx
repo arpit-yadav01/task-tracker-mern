@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { toast } from "react-toastify";
 
 const TaskListPage = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const TaskListPage = () => {
       setTasks(res.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      toast.error("❌ Failed to load tasks");
     }
   };
 
@@ -35,12 +37,18 @@ const TaskListPage = () => {
 
   const toggleStatus = async (task) => {
     try {
-      const res = await api.put(`/tasks/${task._id}`, {
-        status: task.status === "Pending" ? "Completed" : "Pending"
-      });
+      const updatedStatus = task.status === "Pending" ? "Completed" : "Pending";
+      const res = await api.put(`/tasks/${task._id}`, { status: updatedStatus });
       setTasks(tasks.map(t => (t._id === task._id ? res.data : t)));
+      
+      toast.success(
+        updatedStatus === "Completed"
+          ? "✔️ Task marked as completed"
+          : "🔄 Task reopened"
+      );
     } catch (error) {
       console.error("Error updating task:", error);
+      toast.error("❌ Failed to update task");
     }
   };
 
@@ -50,8 +58,10 @@ const TaskListPage = () => {
       setTasks(tasks.filter(t => t._id !== id));
       setExpandedTaskId(null);
       setEditingTask(null);
+      toast.success("🗑️ Task deleted successfully");
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("❌ Failed to delete task");
     }
   };
 
@@ -74,8 +84,10 @@ const TaskListPage = () => {
       const res = await api.put(`/tasks/${editingTask._id}`, editingTask);
       setTasks(tasks.map(t => (t._id === res.data._id ? res.data : t)));
       setEditingTask(null);
+      toast.success("✏️ Task updated successfully");
     } catch (error) {
       console.error("Error updating task:", error);
+      toast.error("❌ Failed to update task");
     }
   };
 
@@ -189,7 +201,6 @@ const TaskListPage = () => {
                     </div>
                   </div>
 
-                  {/* Expanded Section */}
                   {isExpanded && (
                     <div style={{ marginTop: "15px", paddingTop: "15px", borderTop: "2px solid #e2e8f0" }}>
                       

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,42 +16,41 @@ const Home = () => {
   const isValid = form.title && form.dueDate;
 
   const addTask = async () => {
-    await api.post("/tasks", form);
-    setForm({
-      title: "",
-      description: "",
-      priority: "Low",
-      dueDate: ""
-    });
+    try {
+      await api.post("/tasks", form);
+      setForm({
+        title: "",
+        description: "",
+        priority: "Low",
+        dueDate: ""
+      });
+      toast.success("✅ Task added successfully");
+    } catch (err) {
+      console.error("Error adding task:", err);
+      toast.error("❌ Failed to add task");
+    }
   };
 
   return (
     <div className="container">
       <h2>Create Task</h2>
 
-      {/* ===== ROW 1 ===== */}
       <div className="task-form">
         <input
           placeholder="Task Title"
           value={form.title}
-          onChange={e =>
-            setForm({ ...form, title: e.target.value })
-          }
+          onChange={e => setForm({ ...form, title: e.target.value })}
         />
 
         <input
           type="date"
           value={form.dueDate}
-          onChange={e =>
-            setForm({ ...form, dueDate: e.target.value })
-          }
+          onChange={e => setForm({ ...form, dueDate: e.target.value })}
         />
 
         <select
           value={form.priority}
-          onChange={e =>
-            setForm({ ...form, priority: e.target.value })
-          }
+          onChange={e => setForm({ ...form, priority: e.target.value })}
         >
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -73,14 +73,11 @@ const Home = () => {
         </button>
       </div>
 
-      {/* ===== ROW 2 ===== */}
       <div className="task-desc-row">
         <textarea
           placeholder="Task Description (optional)"
           value={form.description}
-          onChange={e =>
-            setForm({ ...form, description: e.target.value })
-          }
+          onChange={e => setForm({ ...form, description: e.target.value })}
         />
       </div>
 
